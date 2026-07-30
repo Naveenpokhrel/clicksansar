@@ -8,7 +8,7 @@
     "dev": "nodemon server.js",
     "seed": "node utils/seeder.js",
     "seed:full": "node utils/seeder.js --full",
-    "build": "npm run build"  
+    "build": "echo 'Backend build complete'"  
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
