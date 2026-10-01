@@ -2,29 +2,17 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import {
   FiGrid,
-  FiBriefcase,
-  FiFileText,
-  FiImage,
-  FiMessageSquare,
-  FiUsers,
-  FiDollarSign,
-  FiHelpCircle,
   FiMail,
   FiSettings,
   FiLayers,
 } from 'react-icons/fi';
 
+import ClickSansarLogo from './ClickSansarLogo';
+
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   const menuItems = [
     { name: 'Dashboard', path: '/', icon: FiGrid },
     { name: 'Services', path: '/services', icon: FiLayers },
-    { name: 'Blog Posts', path: '/blogs', icon: FiFileText },
-    { name: 'Portfolio', path: '/portfolio', icon: FiBriefcase },
-    { name: 'Gallery', path: '/gallery', icon: FiImage },
-    { name: 'Testimonials', path: '/testimonials', icon: FiMessageSquare },
-    { name: 'Team Members', path: '/team', icon: FiUsers },
-    { name: 'Pricing Plans', path: '/pricing', icon: FiDollarSign },
-    { name: 'FAQs', path: '/faqs', icon: FiHelpCircle },
     { name: 'Leads & Inquiries', path: '/leads', icon: FiMail },
     { name: 'Site Settings', path: '/settings', icon: FiSettings },
   ];
@@ -39,18 +27,15 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
       <div>
         <div className="h-16 flex items-center justify-between px-6 border-b border-slate-100 bg-white">
           <NavLink to="/" className="flex items-center gap-2">
-            <span className="text-xl font-extrabold tracking-tight text-slate-900 flex items-center">
-              <span className="text-blue-600">Click</span>
-              <span className="text-slate-800 ml-1">Sansar</span>
-            </span>
-            <span className="px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase bg-blue-100 text-blue-700 rounded-full">
+            <ClickSansarLogo size="small" />
+            <span className="px-1.5 py-0.5 text-[9px] font-bold tracking-wider uppercase bg-blue-100 text-blue-700 rounded-full">
               Admin
             </span>
           </NavLink>
         </div>
 
         {/* Navigation Links */}
-        <nav className="p-4 space-y-1 overflow-y-auto max-h-[calc(100vh-8rem)]">
+        <nav className="p-4 space-y-1.5 overflow-y-auto max-h-[calc(100vh-8rem)]">
           <p className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
             Main Menu
           </p>
@@ -62,7 +47,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 to={item.path}
                 end={item.path === '/'}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 ${
+                  `flex items-center gap-3 px-3.5 py-3 rounded-xl font-medium text-sm transition-all duration-200 ${
                     isActive
                       ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20 font-semibold'
                       : 'text-slate-600 hover:bg-slate-50 hover:text-blue-600'

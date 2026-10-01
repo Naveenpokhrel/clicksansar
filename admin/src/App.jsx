@@ -5,17 +5,10 @@ import { ToastProvider } from './components/Toast';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 
-// Pages
+// Active Pages
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import ServicesManager from './pages/ServicesManager';
-import BlogsManager from './pages/BlogsManager';
-import PortfolioManager from './pages/PortfolioManager';
-import GalleryManager from './pages/GalleryManager';
-import TestimonialsManager from './pages/TestimonialsManager';
-import TeamManager from './pages/TeamManager';
-import PricingManager from './pages/PricingManager';
-import FaqManager from './pages/FaqManager';
 import LeadsManager from './pages/LeadsManager';
 import SettingsManager from './pages/SettingsManager';
 
@@ -65,13 +58,6 @@ function App() {
             <Route element={<ProtectedLayout />}>
               <Route path="/" element={<Dashboard />} />
               <Route path="/services" element={<ServicesManager />} />
-              <Route path="/blogs" element={<BlogsManager />} />
-              <Route path="/portfolio" element={<PortfolioManager />} />
-              <Route path="/gallery" element={<GalleryManager />} />
-              <Route path="/testimonials" element={<TestimonialsManager />} />
-              <Route path="/team" element={<TeamManager />} />
-              <Route path="/pricing" element={<PricingManager />} />
-              <Route path="/faqs" element={<FaqManager />} />
               <Route path="/leads" element={<LeadsManager />} />
               <Route path="/settings" element={<SettingsManager />} />
             </Route>
