@@ -1,23 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { getTeam } from '../../services/api';
-import TeamCard from '../../components/TeamCard/TeamCard';
+import React from 'react';
 import { FiTarget, FiEye, FiHeart, FiAward } from 'react-icons/fi';
 
 const About = () => {
-  const [team, setTeam] = useState([]);
-
-  useEffect(() => {
-    const loadTeam = async () => {
-      try {
-        const teamData = await getTeam();
-        setTeam(teamData);
-      } catch (err) {
-        console.error('About page team load error:', err);
-      }
-    };
-    loadTeam();
-  }, []);
-
   const values = [
     { title: 'Result-Oriented Focus', icon: <FiTarget size={24} className="text-blue-600" />, desc: 'We trace campaigns to real lead acquisitions and transactions.' },
     { title: 'Full Transparency', icon: <FiEye size={24} className="text-blue-600" />, desc: 'Clients get absolute visibility into daily advertising logs.' },
@@ -109,23 +93,6 @@ const About = () => {
           ))}
         </div>
       </section>
-
-      {/* Team Members */}
-      {team && team.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-          <div className="text-center space-y-3">
-            <h2 className="text-3xl font-bold text-slate-900">Meet Our Experts</h2>
-            <p className="text-slate-500 max-w-xl mx-auto text-sm">
-              The creative, marketing, and engineering minds behind our campaigns.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {team.map((member) => (
-              <TeamCard key={member._id} member={member} />
-            ))}
-          </div>
-        </section>
-      )}
     </div>
   );
 };

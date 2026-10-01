@@ -1,356 +1,425 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { FiArrowRight, FiCheckCircle, FiAward, FiUsers, FiTrendingUp, FiVideo, FiMessageCircle, FiClock } from 'react-icons/fi';
-import { getServices, getPortfolios, getTestimonials, getPricing, getBlogs } from '../../services/api';
-import ServiceCard from '../../components/ServiceCard/ServiceCard';
-import PortfolioCard from '../../components/PortfolioCard/PortfolioCard';
-import TestimonialCard from '../../components/TestimonialCard/TestimonialCard';
-import PricingCard from '../../components/PricingCard/PricingCard';
-import BlogCard from '../../components/BlogCard/BlogCard';
-import ContactForm from '../../components/ContactForm/ContactForm';
+import { 
+  FiArrowRight, 
+  FiVideo, 
+  FiEdit3, 
+  FiCode, 
+  FiMessageSquare, 
+  FiFileText, 
+  FiTrendingUp, 
+  FiUsers, 
+  FiBarChart2 
+} from 'react-icons/fi';
+import { FaCrown, FaCheck } from 'react-icons/fa';
+import { SiMeta } from 'react-icons/si';
+import { IoRocketOutline } from 'react-icons/io5';
 
-const Counter = ({ end, suffix = '', duration = 2000 }) => {
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    let start = 0;
-    const totalSteps = duration / 16;
-    const increment = end / totalSteps;
-    const timer = setInterval(() => {
-      start += increment;
-      if (start >= end) {
-        setCount(end);
-        clearInterval(timer);
-      } else {
-        setCount(Math.floor(start));
-      }
-    }, 16);
-    return () => clearInterval(timer);
-  }, [end, duration]);
-
-  return <span>{count.toLocaleString()}{suffix}</span>;
-};
+import heroMockup from '../../assets/hero-mockup.png';
+import whyWorkspace from '../../assets/why-workspace.png';
 
 const Home = () => {
-  const [services, setServices] = useState([]);
-  const [portfolios, setPortfolios] = useState([]);
-  const [testimonials, setTestimonials] = useState([]);
-  const [pricing, setPricing] = useState([]);
-  const [blogs, setBlogs] = useState([]);
-
-  useEffect(() => {
-    const loadHomeData = async () => {
-      try {
-        const [servicesData, portfoliosData, testimonialsData, pricingData, blogsData] = await Promise.all([
-          getServices(),
-          getPortfolios(),
-          getTestimonials(),
-          getPricing(),
-          getBlogs(),
-        ]);
-        setServices(servicesData.slice(0, 6)); // Display first 6 services
-        setPortfolios(portfoliosData.slice(0, 3)); // Display first 3 projects
-        setTestimonials(testimonialsData.slice(0, 3));
-        setPricing(pricingData.slice(0, 3));
-        setBlogs(blogsData.slice(0, 2)); // Display first 2 blogs
-      } catch (err) {
-        console.error('Home data load error:', err);
-      }
-    };
-    loadHomeData();
-  }, []);
-
-  const stats = [
-    { value: 150, suffix: '+', label: 'Projects Completed', icon: <FiCheckCircle size={24} /> },
-    { value: 98, suffix: '%', label: 'Happy Clients', icon: <FiUsers size={24} /> },
-    { value: 100, suffix: 'K+', label: 'Monthly Reach', icon: <FiTrendingUp size={24} /> },
-    { value: 50, suffix: 'M+', label: 'Ad Budget Managed', icon: <FiAward size={24} /> },
+  const services = [
+    {
+      id: 'meta-ads',
+      title: 'Meta Ads & Boosting',
+      desc: 'Reach the right audience and promote your business with powerful Meta ads.',
+      icon: <SiMeta size={24} />,
+      iconBg: 'bg-[#2563eb]',
+      textColor: 'text-[#2563eb]',
+      cardBorder: 'hover:border-blue-200',
+      link: '/services/meta-ads',
+    },
+    {
+      id: 'video-shoot',
+      title: 'Video Shoot & Editing',
+      desc: "Professional videos and reels that tell your brand's story.",
+      icon: <FiVideo size={22} />,
+      iconBg: 'bg-[#f43f5e]',
+      textColor: 'text-[#f43f5e]',
+      cardBorder: 'hover:border-rose-200',
+      link: '/services/video-shoot',
+    },
+    {
+      id: 'content-creation',
+      title: 'Content Creation',
+      desc: "Engaging content designed for social media and your brand's growth.",
+      icon: <FiEdit3 size={22} />,
+      iconBg: 'bg-[#10b981]',
+      textColor: 'text-[#10b981]',
+      cardBorder: 'hover:border-emerald-200',
+      link: '/services/content-creation',
+    },
+    {
+      id: 'subscriptions',
+      title: 'Subscriptions',
+      desc: 'Digital subscription services for businesses and creators.',
+      icon: <FaCrown size={20} />,
+      iconBg: 'bg-[#8b5cf6]',
+      textColor: 'text-[#8b5cf6]',
+      cardBorder: 'hover:border-purple-200',
+      link: '/services/subscriptions',
+    },
+    {
+      id: 'web-dev',
+      title: 'Website & App Development',
+      desc: 'Modern websites and applications built for your needs.',
+      icon: <FiCode size={22} />,
+      iconBg: 'bg-[#f97316]',
+      textColor: 'text-[#f97316]',
+      cardBorder: 'hover:border-orange-200',
+      link: '/services/web-dev',
+    },
   ];
 
-  const steps = [
-    { num: '01', title: 'Consultation', desc: 'We audit your active pages and draft a customized strategy call.' },
-    { num: '02', title: 'Planning', desc: 'Establish calendars, content vectors, targeting parameters, and budget models.' },
-    { num: '03', title: 'Content Creation', desc: 'Our team designs post graphics, scripts videos, and builds page copy.' },
-    { num: '04', title: 'Campaign Launch', desc: 'Configure target structures and publish highly optimized conversion ads.' },
-    { num: '05', title: 'Optimization & Reporting', desc: 'Audit CTR values, adjust bid strategies, and issue performance logs.' },
+  const processSteps = [
+    {
+      step: '01',
+      title: 'Discuss',
+      desc: 'Share your goals and ideas with us.',
+      icon: <FiMessageSquare size={20} />,
+    },
+    {
+      step: '02',
+      title: 'Plan',
+      desc: 'We create a strategy that fits your needs.',
+      icon: <FiFileText size={20} />,
+    },
+    {
+      step: '03',
+      title: 'Create',
+      desc: 'Our team brings your vision to life.',
+      icon: <FiVideo size={20} />,
+    },
+    {
+      step: '04',
+      title: 'Grow',
+      desc: 'See real results and take your business forward.',
+      icon: <FiBarChart2 size={20} />,
+    },
   ];
 
   return (
-    <div className="pt-24 space-y-24">
-      {/* 1. Hero Section */}
-      <section className="relative bg-gradient-to-b from-blue-50/50 to-white py-20 sm:py-28 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+    <div className="bg-white text-slate-900 overflow-hidden font-sans">
+      
+      {/* 1. HERO SECTION */}
+      <section className="relative pt-28 pb-14 sm:pt-36 sm:pb-20 overflow-hidden">
+        {/* Soft background glow */}
+        <div className="absolute top-1/2 right-12 -translate-y-1/2 w-[520px] h-[520px] bg-sky-100/50 rounded-full blur-3xl pointer-events-none -z-10" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6 items-center">
+            
+            {/* Left Column: Headlines & CTA */}
+            <div className="lg:col-span-6 space-y-6 text-left">
+              <div>
+                <span className="text-[12px] sm:text-[13px] font-bold tracking-[0.2em] text-slate-400 uppercase">
+                  DIGITAL MARKETING AGENCY
+                </span>
+                <h1 className="text-4xl sm:text-5xl lg:text-[56px] font-black text-slate-900 leading-[1.14] tracking-tight mt-2">
+                  Grow Your Business. <br />
+                  <span className="text-[#1a66ff]">Go Digital.</span>
+                </h1>
+              </div>
+
+              <p className="text-slate-600 text-sm sm:text-base leading-relaxed max-w-lg">
+                Click Sansar helps businesses grow through digital marketing, creative content, advertising and technology.
+              </p>
+
+              <div className="flex flex-wrap items-center gap-4 pt-2">
+                <Link
+                  to="/contact"
+                  className="inline-flex items-center gap-2 bg-[#1a66ff] hover:bg-[#1554d1] text-white font-semibold text-sm px-7 py-3 rounded-full shadow-md shadow-blue-500/25 hover:shadow-lg transition-all duration-200"
+                >
+                  <span>Get Started</span>
+                  <FiArrowRight />
+                </Link>
+
+                <Link
+                  to="/services"
+                  className="inline-flex items-center font-medium text-sm text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 px-6 py-3 rounded-full transition-all duration-200 shadow-sm"
+                >
+                  View Services
+                </Link>
+              </div>
+            </div>
+
+            {/* Right Column: 3D Laptop Mockup */}
+            <div className="lg:col-span-6 relative flex justify-center items-center">
+              <div className="relative w-full max-w-[560px]">
+                <img
+                  src={heroMockup}
+                  alt="Click Sansar Digital Marketing Agency Laptop Mockup"
+                  className="w-full h-auto object-contain select-none mix-blend-multiply drop-shadow-sm"
+                  loading="eager"
+                />
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* 2. OUR SERVICES SECTION */}
+      <section className="py-14 sm:py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          {/* Hero Content */}
-          <div className="lg:col-span-7 space-y-6 text-left">
-            <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-600 border border-blue-100">
-              ⚡ Top Digital Marketing Agency in Nepal
+          {/* Section Header */}
+          <div className="text-left mb-12">
+            <span className="text-xs font-bold tracking-[0.2em] text-slate-400 uppercase">
+              OUR SERVICES
             </span>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 leading-tight">
-              Grow Your Business with Digital Marketing That <span className="text-blue-600 bg-clip-text">Delivers Results</span>
-            </h1>
-            <p className="text-slate-600 text-lg leading-relaxed max-w-2xl">
-              Click Sansar helps businesses increase visibility, generate high-quality client leads, and scale online sales through strategic marketing campaigns, cinematic videos, and optimized web design.
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mt-1">
+              What We Do
+            </h2>
+            <p className="text-slate-500 text-sm sm:text-[15px] mt-2 max-w-2xl">
+              We offer complete digital solutions to help your brand grow, engage and succeed online.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 pt-2">
-              <Link to="/contact" className="px-8 py-4 rounded-full font-bold text-center text-sm uppercase tracking-wider blue-gradient shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/30 transition-all">
-                Get Free Consultation
-              </Link>
-              <Link to="/portfolio" className="px-8 py-4 rounded-full font-bold text-center text-sm uppercase tracking-wider bg-slate-50 border border-slate-200 text-slate-700 hover:bg-slate-100 transition-colors">
-                View Portfolio
-              </Link>
-            </div>
           </div>
 
-          {/* Hero Mockup Image */}
-          <div className="lg:col-span-5 relative flex justify-center">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] h-[380px] bg-blue-100 rounded-full blur-3xl opacity-60 z-0" />
-            <div className="relative z-10 w-full max-w-[420px] bg-white rounded-3xl p-4 shadow-2xl border border-slate-100">
-              <img
-                src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&q=80"
-                alt="Marketing growth chart mockup"
-                className="rounded-2xl w-full h-[280px] object-cover"
-              />
-              <div className="mt-4 flex justify-between items-center px-2">
+          {/* 5 Service Cards Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
+            {services.map((item) => (
+              <Link
+                key={item.id}
+                to={item.link}
+                className={`bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between group cursor-pointer ${item.cardBorder}`}
+              >
                 <div>
-                  <h4 className="font-bold text-slate-900 text-sm">Campaign Roas</h4>
-                  <p className="text-xs text-green-600 font-semibold">+340% Performance Lift</p>
+                  {/* Colored Icon Badge */}
+                  <div
+                    className={`w-12 h-12 rounded-xl ${item.iconBg} text-white flex items-center justify-center mb-6 shadow-sm`}
+                  >
+                    {item.icon}
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="font-bold text-slate-900 text-[16px] leading-snug group-hover:text-blue-600 transition-colors">
+                    {item.title}
+                  </h3>
+
+                  {/* Description */}
+                  <p className="text-slate-500 text-xs sm:text-[13px] leading-relaxed mt-3">
+                    {item.desc}
+                  </p>
                 </div>
-                <div className="px-3 py-1 bg-blue-50 rounded-full text-xs font-bold text-blue-600">
-                  Live Analytics
+
+                {/* Arrow Link */}
+                <div className="pt-6">
+                  <span
+                    className={`inline-flex items-center text-base font-bold ${item.textColor} group-hover:translate-x-1.5 transition-transform`}
+                    aria-label={`Learn more about ${item.title}`}
+                  >
+                    <FiArrowRight size={18} />
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+
+        </div>
+      </section>
+
+      {/* 3. WHY CLICK SANSAR SECTION */}
+      <section className="py-12 sm:py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          {/* Soft ice-blue rounded card */}
+          <div className="bg-[#f2f7fd] rounded-3xl p-6 sm:p-10 lg:p-12 border border-blue-100/50">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+              
+              {/* Left Column: Heading & Checklist */}
+              <div className="lg:col-span-5 space-y-6 text-left">
+                <div>
+                  <span className="text-xs font-bold tracking-[0.2em] text-slate-400 uppercase">
+                    WHY CLICK SANSAR
+                  </span>
+                  <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-extrabold text-slate-900 leading-tight mt-1">
+                    One place for your digital needs.
+                  </h2>
+                  <p className="text-slate-600 text-sm leading-relaxed mt-3">
+                    We combine marketing, creative content and technology to help businesses build a stronger online presence.
+                  </p>
+                </div>
+
+                {/* Checklist with circular checkmarks */}
+                <ul className="space-y-3 pt-1">
+                  {[
+                    'Creative & Professional Team',
+                    'Affordable Pricing',
+                    'On-Time Delivery',
+                    'Client Satisfaction',
+                  ].map((text, idx) => (
+                    <li key={idx} className="flex items-center gap-3">
+                      <div className="w-5 h-5 rounded-full bg-[#1a66ff] text-white flex items-center justify-center flex-shrink-0">
+                        <FaCheck size={9} />
+                      </div>
+                      <span className="font-semibold text-slate-800 text-xs sm:text-sm">
+                        {text}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Center Column: Desk Workspace Photo with Script badge */}
+              <div className="lg:col-span-4 flex justify-center">
+                <div className="relative w-full rounded-2xl overflow-hidden shadow-sm border border-white">
+                  <img
+                    src={whyWorkspace}
+                    alt="Click Sansar Creative Desk Setup with Laptop and Camera"
+                    className="w-full h-[260px] sm:h-[280px] object-cover"
+                    loading="lazy"
+                  />
                 </div>
               </div>
+
+              {/* Right Column: 3 Vertical Stats Cards */}
+              <div className="lg:col-span-3 space-y-3.5">
+                
+                {/* Stat 1 */}
+                <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-100/80 flex items-center gap-4 hover:shadow-md transition-shadow">
+                  <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
+                    <FiUsers size={20} />
+                  </div>
+                  <div>
+                    <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wide block">
+                      Happy Clients
+                    </span>
+                    <span className="text-xl sm:text-2xl font-extrabold text-slate-900">
+                      100+
+                    </span>
+                  </div>
+                </div>
+
+                {/* Stat 2 */}
+                <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-100/80 flex items-center gap-4 hover:shadow-md transition-shadow">
+                  <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
+                    <FiFileText size={20} />
+                  </div>
+                  <div>
+                    <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wide block">
+                      Projects Completed
+                    </span>
+                    <span className="text-xl sm:text-2xl font-extrabold text-slate-900">
+                      150+
+                    </span>
+                  </div>
+                </div>
+
+                {/* Stat 3 */}
+                <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-100/80 flex items-center gap-4 hover:shadow-md transition-shadow">
+                  <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0">
+                    <FiTrendingUp size={20} />
+                  </div>
+                  <div>
+                    <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wide block">
+                      Growth Focused
+                    </span>
+                    <span className="text-xl sm:text-2xl font-extrabold text-slate-900">
+                      Always
+                    </span>
+                  </div>
+                </div>
+
+              </div>
+
             </div>
           </div>
 
         </div>
       </section>
 
-      {/* 2. Trusted By Banner */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
-        <p className="text-slate-400 font-bold uppercase tracking-wider text-xs">Trusted by businesses across Nepal</p>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 items-center justify-items-center opacity-65 grayscale hover:grayscale-0 transition-all duration-300">
-          <span className="font-extrabold text-lg text-slate-500">Apex Consult</span>
-          <span className="font-extrabold text-lg text-slate-500">Eco Nepal</span>
-          <span className="font-extrabold text-lg text-slate-500">Sajha Store</span>
-          <span className="font-extrabold text-lg text-slate-500">Chic Nepal</span>
-          <span className="font-extrabold text-lg text-slate-500">Himalayan Brews</span>
-          <span className="font-extrabold text-lg text-slate-500">Nirmal Tech</span>
+      {/* 4. OUR PROCESS SECTION */}
+      <section className="py-16 sm:py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          
+          {/* Header */}
+          <div className="mb-14">
+            <span className="text-xs font-bold tracking-[0.2em] text-slate-400 uppercase">
+              OUR PROCESS
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mt-1">
+              Simple Steps to Success
+            </h2>
+            <p className="text-slate-500 text-sm sm:text-[15px] mt-2">
+              We make the process easy, so you can focus on what you do best.
+            </p>
+          </div>
+
+          {/* 4 Steps with connecting arrows */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-6 relative">
+            {processSteps.map((step, idx) => (
+              <div key={step.step} className="flex flex-col items-center text-center relative group">
+                
+                {/* Circular Icon */}
+                <div className="w-14 h-14 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 mb-4 group-hover:bg-[#1a66ff] group-hover:text-white group-hover:scale-105 transition-all duration-300 shadow-sm">
+                  {step.icon}
+                </div>
+
+                {/* Step Number & Title */}
+                <h3 className="font-extrabold text-slate-900 text-base">
+                  {step.step} — {step.title}
+                </h3>
+
+                {/* Description */}
+                <p className="text-slate-500 text-xs sm:text-[13px] leading-relaxed mt-2 max-w-[210px]">
+                  {step.desc}
+                </p>
+
+                {/* Connector Arrow for Desktop */}
+                {idx < processSteps.length - 1 && (
+                  <div className="hidden lg:block absolute top-7 -right-4 text-slate-300 transform -translate-y-1/2 pointer-events-none">
+                    <FiArrowRight size={18} />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
         </div>
       </section>
 
-      {/* 3. About Preview */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        <div className="relative">
-          <img
-            src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80"
-            alt="Click Sansar team brainstorming"
-            className="rounded-3xl shadow-xl w-full max-h-[380px] object-cover border border-slate-100"
-          />
-        </div>
-        <div className="space-y-6 text-left">
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 leading-tight">
-            We are click-driven creators scaling corporate identities online.
-          </h2>
-          <p className="text-slate-600 leading-relaxed">
-            Click Sansar is a digital marketing collective based in Kathmandu. We design premium conversion channels, manage paid ads budgets on Facebook & Instagram, capture vertical storytelling reels, and engineer secure business websites.
-          </p>
-          <div className="space-y-3">
+      {/* 5. CALL TO ACTION BANNER */}
+      <section className="py-6 pb-16 sm:pb-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          <div className="bg-[#1a66ff] rounded-2xl sm:rounded-3xl p-6 sm:p-7 shadow-xl shadow-blue-500/20 text-white flex flex-col md:flex-row items-center justify-between gap-6">
+            
+            {/* Left Content */}
+            <div className="flex items-center gap-4 text-left">
+              <div className="w-12 h-12 rounded-full bg-white/15 flex items-center justify-center text-white text-2xl flex-shrink-0">
+                <IoRocketOutline />
+              </div>
+              <div>
+                <h3 className="text-lg sm:text-xl font-extrabold text-white">
+                  Ready to take your business online?
+                </h3>
+                <p className="text-blue-100 text-xs sm:text-sm mt-0.5">
+                  Let's build something that gets noticed.
+                </p>
+              </div>
+            </div>
+
+            {/* Right Action */}
             <div className="flex items-center gap-3">
-              <FiCheckCircle className="text-blue-600 flex-shrink-0" />
-              <span className="font-semibold text-slate-800 text-sm">Transparency in Campaign Analytics Reports</span>
+              <span className="hidden sm:inline-block text-white/50 text-xl font-light">
+                ―&gt;
+              </span>
+              <Link
+                to="/contact"
+                className="bg-white hover:bg-slate-100 text-[#1a66ff] font-bold text-xs sm:text-sm px-6 py-2.5 rounded-full inline-flex items-center gap-2 shadow-sm transition-all duration-200"
+              >
+                <span>Get Started</span>
+                <FiArrowRight />
+              </Link>
             </div>
-            <div className="flex items-center gap-3">
-              <FiCheckCircle className="text-blue-600 flex-shrink-0" />
-              <span className="font-semibold text-slate-800 text-sm">Professional In-house Production Gear</span>
-            </div>
+
           </div>
-          <div className="pt-2">
-            <Link to="/about" className="inline-flex items-center gap-2 font-bold text-blue-600 hover:text-indigo-600 transition-colors">
-              Learn More About Us <FiArrowRight />
-            </Link>
-          </div>
+
         </div>
       </section>
 
-      {/* 4. Services Preview */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-        <div className="text-center space-y-4">
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900">What We Do Best</h2>
-          <p className="text-slate-500 max-w-xl mx-auto text-sm leading-relaxed">
-            Explore our specialized marketing and production fields optimized to scale up your monthly inquiries and brand engagement.
-          </p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {services.map((service) => (
-            <ServiceCard key={service._id} service={service} />
-          ))}
-        </div>
-        <div className="text-center pt-4">
-          <Link to="/services" className="inline-flex items-center gap-2 font-bold text-blue-600 hover:text-indigo-600 transition-colors">
-            View All Services <FiArrowRight />
-          </Link>
-        </div>
-      </section>
-
-      {/* 5. Statistics Counters */}
-      <section className="bg-slate-900 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 lg:grid-cols-4 gap-10 text-center">
-          {stats.map((stat, i) => (
-            <div key={i} className="space-y-2">
-              <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center mx-auto text-blue-400 mb-2 border border-slate-700">
-                {stat.icon}
-              </div>
-              <h3 className="text-3xl sm:text-4xl font-extrabold">
-                <Counter end={stat.value} suffix={stat.suffix} />
-              </h3>
-              <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">{stat.label}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 6. Why Choose Us */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        <div className="space-y-6 text-left">
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900">Why Digital Marketers Choose Click Sansar</h2>
-          <p className="text-slate-600 leading-relaxed">
-            Unlike generic web builders or template promoters, we design custom brand pipelines. We merge creative content with performance metrics so your investments lead directly to customer orders.
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div className="flex gap-3">
-              <FiCheckCircle className="text-blue-600 mt-1 flex-shrink-0" />
-              <div>
-                <h4 className="font-bold text-slate-800 text-sm">Creative Blueprint</h4>
-                <p className="text-slate-500 text-xs mt-1">Posts and copywriting tailored to local buying intents.</p>
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <FiUsers className="text-blue-600 mt-1 flex-shrink-0" />
-              <div>
-                <h4 className="font-bold text-slate-800 text-sm">Dedicated Team</h4>
-                <p className="text-slate-500 text-xs mt-1">Experienced creators, photographers, and developers.</p>
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <FiClock className="text-blue-600 mt-1 flex-shrink-0" />
-              <div>
-                <h4 className="font-bold text-slate-800 text-sm">Fast Communication</h4>
-                <p className="text-slate-500 text-xs mt-1">Dedicated WhatsApp coordinate groups for daily checkups.</p>
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <FiTrendingUp className="text-blue-600 mt-1 flex-shrink-0" />
-              <div>
-                <h4 className="font-bold text-slate-800 text-sm">Conversion Focused</h4>
-                <p className="text-slate-500 text-xs mt-1">High conversion setups that maximize advertising ROI.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <img
-            src="https://images.unsplash.com/photo-1557838923-2985c318be48?auto=format&fit=crop&w=800&q=80"
-            alt="Growth metrics graphs"
-            className="rounded-3xl shadow-xl w-full max-h-[380px] object-cover"
-          />
-        </div>
-      </section>
-
-      {/* 7. Portfolio Preview */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-        <div className="text-center space-y-4">
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900">Recent Showcase Projects</h2>
-          <p className="text-slate-500 max-w-xl mx-auto text-sm leading-relaxed">
-            Check out some of our visual graphics, promotional videos, and responsive applications engineered for Nepali businesses.
-          </p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {portfolios.map((project) => (
-            <PortfolioCard key={project._id} project={project} />
-          ))}
-        </div>
-        <div className="text-center pt-4">
-          <Link to="/portfolio" className="inline-flex items-center gap-2 font-bold text-blue-600 hover:text-indigo-600 transition-colors">
-            View All Projects <FiArrowRight />
-          </Link>
-        </div>
-      </section>
-
-      {/* 8. Our Process */}
-      <section className="bg-slate-50 py-20 border-y border-slate-100/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-          <div className="text-center space-y-4">
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900">Our Launch Workflow</h2>
-            <p className="text-slate-500 max-w-xl mx-auto text-sm leading-relaxed">
-              We execute in transparent milestones, keeping you aligned on designs, creative formats, and analytics.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
-            {steps.map((step, idx) => (
-              <div key={idx} className="bg-white border border-slate-100 rounded-2xl p-6 relative shadow-sm">
-                <span className="text-3xl font-black text-blue-100 absolute top-4 right-4">{step.num}</span>
-                <h3 className="font-bold text-slate-900 text-base mb-2 mt-4">{step.title}</h3>
-                <p className="text-slate-500 text-xs leading-relaxed">{step.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 9. Testimonials Slider */}
-      {testimonials && testimonials.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-          <div className="text-center space-y-4">
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900">Success Stories</h2>
-            <p className="text-slate-500 max-w-xl mx-auto text-sm leading-relaxed">
-              Read how click optimization and dynamic media campaigns drove sales and leads for our clients.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {testimonials.map((testimonial) => (
-              <TestimonialCard key={testimonial._id} testimonial={testimonial} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* 10. Packages Preview */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-        <div className="text-center space-y-4">
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900">Transparent Pricing Packages</h2>
-          <p className="text-slate-500 max-w-xl mx-auto text-sm leading-relaxed">
-            Choose a plan that fits your current operational budgets. We offer customizable options.
-          </p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {pricing.map((plan) => (
-            <PricingCard key={plan._id} plan={plan} />
-          ))}
-        </div>
-      </section>
-
-      {/* 11. Latest Blogs */}
-      {blogs && blogs.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-          <div className="text-center space-y-4">
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900">Latest Articles & Guides</h2>
-            <p className="text-slate-500 max-w-xl mx-auto text-sm leading-relaxed">
-              Read our latest digital marketing, Reels content, and website strategy tips.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {blogs.map((blog) => (
-              <BlogCard key={blog._id} blog={blog} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* 12. Contact CTA Form */}
-      <section id="contact-cta" className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-        <ContactForm />
-      </section>
     </div>
   );
 };
