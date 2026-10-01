@@ -45,17 +45,10 @@ app.use(express.urlencoded({ extended: true }));
 // Serve Uploads Folder static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Mount API Routes
+// Active API Routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/leads', require('./routes/leadRoutes'));
 app.use('/api/services', require('./routes/serviceRoutes'));
-app.use('/api/portfolio', require('./routes/portfolioRoutes'));
-app.use('/api/blogs', require('./routes/blogRoutes'));
-app.use('/api/gallery', require('./routes/galleryRoutes'));
-app.use('/api/testimonials', require('./routes/testimonialRoutes'));
-app.use('/api/team', require('./routes/teamRoutes'));
-app.use('/api/pricing', require('./routes/pricingRoutes'));
-app.use('/api/faqs', require('./routes/faqRoutes'));
 app.use('/api/settings', require('./routes/settingRoutes'));
 app.use('/api/chatbot', require('./routes/chatbotRoutes'));
 app.use('/api/upload', require('./routes/uploadRoutes'));

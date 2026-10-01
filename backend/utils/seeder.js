@@ -2,16 +2,9 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const path = require('path');
 
-// Models
+// Active Models
 const User = require('../models/User');
 const Service = require('../models/Service');
-const Portfolio = require('../models/Portfolio');
-const Blog = require('../models/Blog');
-const Gallery = require('../models/Gallery');
-const Testimonial = require('../models/Testimonial');
-const Team = require('../models/Team');
-const Pricing = require('../models/Pricing');
-const FAQ = require('../models/FAQ');
 const Setting = require('../models/Setting');
 const Lead = require('../models/Lead');
 
@@ -31,13 +24,6 @@ const seedAdminOnly = async () => {
       console.log('Running full sample data seed...');
       await User.deleteMany();
       await Service.deleteMany();
-      await Portfolio.deleteMany();
-      await Blog.deleteMany();
-      await Gallery.deleteMany();
-      await Testimonial.deleteMany();
-      await Team.deleteMany();
-      await Pricing.deleteMany();
-      await FAQ.deleteMany();
       await Setting.deleteMany();
       await Lead.deleteMany();
 
@@ -52,16 +38,9 @@ const seedAdminOnly = async () => {
       console.log('Seeded Admin User (username: admin, password: admin123)');
 
       await Service.insertMany(sampleData.services);
-      await Pricing.insertMany(sampleData.plans);
-      await FAQ.insertMany(sampleData.faqs);
-      await Team.insertMany(sampleData.team);
-      await Testimonial.insertMany(sampleData.testimonials);
-      await Portfolio.insertMany(sampleData.portfolios);
-      await Gallery.insertMany(sampleData.gallery);
-      await Blog.insertMany(sampleData.blogs);
       await Setting.create(sampleData.setting);
 
-      console.log('All sample data successfully seeded into MongoDB!');
+      console.log('Core sample data successfully seeded into MongoDB!');
     } else {
       console.log('Seeding/Updating Admin Panel User Login Details...');
 
