@@ -15,6 +15,8 @@ const app = express();
 
 // CORS configuration for client URLs
 const allowedOrigins = [
+  'https://www.clicksansar.com',
+  'https://clicksansar.com',
   'https://clicksansar.vercel.app',
   'https://clicksansar-behm.vercel.app',
   'http://localhost:5173',
