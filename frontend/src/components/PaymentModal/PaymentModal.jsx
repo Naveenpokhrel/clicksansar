@@ -1,4 +1,5 @@
-﻿import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   FiX,
   FiLock,
@@ -7,20 +8,23 @@ import {
   FiUploadCloud,
   FiShield,
   FiSmartphone,
-  FiCheckCircle,
   FiAlertCircle,
   FiUser,
-  FiMail,
-  FiPhone,
   FiTag,
+  FiClock,
+  FiShoppingBag,
+  FiArrowRight,
+  FiGrid,
 } from 'react-icons/fi';
+import { useAuth } from '../../context/AuthContext';
 import { uploadImage, submitLead } from '../../services/api';
 import ClickSansarLogo from '../Navbar/ClickSansarLogo';
 
 const PaymentModal = ({ isOpen, onClose, orderData }) => {
-  if (!isOpen) return null;
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
-  // Exact Immutable Product Price
+  // Product price information
   const itemName = orderData?.title || 'Digital Subscription';
   const subtotalNPR = Math.round(orderData?.totalNPR || orderData?.totalCost || 500);
 
@@ -47,6 +51,7 @@ const PaymentModal = ({ isOpen, onClose, orderData }) => {
   const [submitting, setSubmitting] = useState(false);
   const [submittedSuccess, setSubmittedSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [submittedOrderNumber, setSubmittedOrderNumber] = useState('');
 
   // eSewa QR Configuration
   const esewaConfig = {
@@ -55,6 +60,15 @@ const PaymentModal = ({ isOpen, onClose, orderData }) => {
     walletId: '9703440607',
     qrImage: '/esewa-qr.svg',
   };
+
+  // Pre-fill user details when modal opens and user is authenticated
+  useEffect(() => {
+    if (isOpen && user) {
+      if (user.fullName && !fullName) setFullName(user.fullName);
+      if (user.email && !email) setEmail(user.email);
+      if (user.phone && !phone) setPhone(user.phone);
+    }
+  }, [isOpen, user]);
 
   const finalTotalNPR = Math.max(0, Math.round(subtotalNPR * (1 - discountPercent / 100)));
 
@@ -82,6 +96,33 @@ const PaymentModal = ({ isOpen, onClose, orderData }) => {
     setTimeout(() => setCopiedAmount(false), 2000);
   };
 
+  // Reset and close handler
+  const handleClose = () => {
+    setSubmittedSuccess(false);
+    setProofFile(null);
+    setProofPreview('');
+    setPaymentRef('');
+    setEsewaNumber('');
+    setCoupon('');
+    setDiscountPercent(0);
+    setCouponApplied(false);
+    setErrorMessage('');
+    setSubmittedOrderNumber('');
+    onClose();
+  };
+
+  // Handler to continue shopping & explore more services
+  const handleBuyMore = () => {
+    handleClose();
+    navigate('/services/subscriptions');
+  };
+
+  // Handler to go directly to Client Dashboard
+  const handleGoDashboard = () => {
+    handleClose();
+    navigate('/dashboard');
+  };
+
   // Proof Upload handler
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
@@ -97,7 +138,7 @@ const PaymentModal = ({ isOpen, onClose, orderData }) => {
         setProofPreview(res.imageUrl);
       }
     } catch (err) {
-      console.log('Local preview used for proof screenshot');
+      console.log('Local preview used for proof screenshot', err);
     } finally {
       setUploadingProof(false);
     }
@@ -139,7 +180,30 @@ const PaymentModal = ({ isOpen, onClose, orderData }) => {
         paymentProof: proofPreview || '',
       };
 
-      await submitLead(payload);
+      const result = await submitLead(payload);
+      const generatedOrderNo = result?.orderNumber || result?.lead?.orderNumber || `ORD-${Date.now().toString().slice(-6)}`;
+      setSubmittedOrderNumber(generatedOrderNo);
+
+      // Save to client localStorage so it appears on Dashboard immediately
+      try {
+        const local = JSON.parse(localStorage.getItem('clicksansar_client_orders') || '[]');
+        const newOrder = {
+          orderNumber: generatedOrderNo,
+          serviceInterested: itemName,
+          budget: `NPR ${finalTotalNPR.toLocaleString()}`,
+          amountPaid: `NPR ${finalTotalNPR.toLocaleString()}`,
+          isPaymentConfirmed: false,
+          paymentStatus: 'Pending',
+          status: 'New',
+          productKey: 'LOCKED_AWAITING_CONFIRMATION',
+          createdAt: new Date().toISOString(),
+          backendId: result?._id || result?.lead?._id,
+        };
+        localStorage.setItem('clicksansar_client_orders', JSON.stringify([newOrder, ...local]));
+      } catch (storageErr) {
+        console.log('Error caching client order:', storageErr);
+      }
+
       setSubmittedSuccess(true);
     } catch (err) {
       setErrorMessage(err.message || 'Failed to submit payment. Please try again.');
@@ -147,6 +211,9 @@ const PaymentModal = ({ isOpen, onClose, orderData }) => {
       setSubmitting(false);
     }
   };
+
+  // Safe early exit AFTER all hooks are called
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 transition-all">
@@ -168,7 +235,7 @@ const PaymentModal = ({ isOpen, onClose, orderData }) => {
           </div>
 
           <button
-            onClick={onClose}
+            onClick={handleClose}
             aria-label="Close modal"
             className="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 flex items-center justify-center transition-colors"
           >
@@ -179,46 +246,78 @@ const PaymentModal = ({ isOpen, onClose, orderData }) => {
         {/* Modal Content */}
         <div className="p-5 sm:p-8 overflow-y-auto flex-grow space-y-6">
           {submittedSuccess ? (
-            <div className="py-12 px-6 text-center space-y-6 max-w-lg mx-auto">
+            <div className="py-8 px-4 sm:px-6 text-center space-y-6 max-w-lg mx-auto animate-fadeIn">
+              
+              {/* Status Icon */}
               <div className="w-20 h-20 bg-amber-100 text-amber-700 rounded-full flex items-center justify-center mx-auto shadow-sm">
-                <FiClock size={44} className="animate-pulse" />
+                <FiClock size={40} className="animate-pulse" />
               </div>
+
+              {/* Status Header */}
               <div className="space-y-2">
-                <h2 className="text-2xl font-extrabold text-slate-900">PENDING VERIFICATION</h2>
-                <p className="text-slate-600 text-sm leading-relaxed">
-                  Your payment has been submitted successfully and is currently waiting for admin verification.
+                <span className="inline-block px-3 py-1 bg-amber-100 text-amber-800 font-extrabold text-xs rounded-full uppercase tracking-wider">
+                  Order #{submittedOrderNumber || 'RECEIVED'}
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                  PENDING VERIFICATION
+                </h2>
+                <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                  Your payment has been received successfully! Our admin team is verifying your payment details. Once verified, your product key/license will be unlocked.
                 </p>
               </div>
 
-              <div className="bg-amber-50 rounded-2xl p-5 border border-amber-200 text-left text-xs space-y-2.5">
-                <div className="flex justify-between text-slate-700">
-                  <span className="font-medium">Selected Product:</span>
+              {/* Order Receipt Card */}
+              <div className="bg-amber-50/70 rounded-2xl p-5 border border-amber-200/90 text-left text-xs space-y-2.5 shadow-sm">
+                <div className="flex justify-between items-center text-slate-700 pb-2 border-b border-amber-200/60">
+                  <span className="font-semibold text-slate-500">Purchased Item:</span>
                   <span className="text-slate-900 font-bold">{itemName}</span>
                 </div>
-                <div className="flex justify-between text-slate-700">
-                  <span className="font-medium">Amount to Pay:</span>
-                  <span className="text-emerald-700 font-extrabold text-sm">NPR {finalTotalNPR.toLocaleString()}</span>
+                <div className="flex justify-between items-center text-slate-700 pb-2 border-b border-amber-200/60">
+                  <span className="font-semibold text-slate-500">Total Paid:</span>
+                  <span className="text-emerald-700 font-black text-sm">
+                    NPR {finalTotalNPR.toLocaleString()}
+                  </span>
                 </div>
-                <div className="flex justify-between text-slate-700">
-                  <span className="font-medium">eSewa Paid From:</span>
+                <div className="flex justify-between items-center text-slate-700 pb-2 border-b border-amber-200/60">
+                  <span className="font-semibold text-slate-500">eSewa Paid From:</span>
                   <span className="text-[#1a66ff] font-bold">{esewaNumber}</span>
                 </div>
-                <div className="flex justify-between text-slate-700">
-                  <span className="font-medium">Payment Reference:</span>
+                <div className="flex justify-between items-center text-slate-700">
+                  <span className="font-semibold text-slate-500">Payment Ref / Remarks:</span>
                   <span className="text-slate-900 font-mono font-bold">{paymentRef}</span>
                 </div>
               </div>
 
-              <div className="p-3.5 bg-blue-50 border border-blue-100 rounded-xl text-xs text-[#1a66ff] font-semibold text-left">
-                🔒 Note: Your product/subscription information remains locked until admin approves your payment in the Admin Dashboard.
+              {/* Lock Notice */}
+              <div className="p-3.5 bg-blue-50/90 border border-blue-100 rounded-xl text-xs text-[#1a66ff] font-semibold text-left flex items-start gap-2">
+                <FiLock className="flex-shrink-0 mt-0.5" />
+                <span>
+                  Your product key / credentials remain securely locked until admin approves the payment in the Admin Dashboard.
+                </span>
               </div>
 
-              <button
-                onClick={onClose}
-                className="w-full py-3.5 bg-[#1a66ff] hover:bg-[#1554d1] text-white font-bold rounded-xl text-sm transition-all shadow-md shadow-blue-500/20"
-              >
-                Return to Dashboard
-              </button>
+              {/* Action Buttons: 1. Buy More Services, 2. View in Dashboard */}
+              <div className="space-y-3 pt-2">
+                <button
+                  type="button"
+                  onClick={handleBuyMore}
+                  className="w-full py-3.5 bg-[#1a66ff] hover:bg-[#1554d1] text-white font-extrabold rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-md shadow-blue-500/20 hover:scale-[1.01]"
+                >
+                  <FiShoppingBag size={16} />
+                  <span>Buy More Services & Subscriptions</span>
+                  <FiArrowRight size={14} />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleGoDashboard}
+                  className="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-all"
+                >
+                  <FiGrid size={15} />
+                  <span>Track Order in Client Dashboard</span>
+                </button>
+              </div>
+
             </div>
           ) : (
             <form onSubmit={handleSubmitOrder} className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
